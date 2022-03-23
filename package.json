@@ -12,9 +12,6 @@
   },
   "pre-commit": [
     "find:unused",
-    "lint",
-    "type-check",
-    "lint:fix",
     "prettier"
   ],
   "dependencies": {
