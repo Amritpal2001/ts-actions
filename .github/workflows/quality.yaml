@@ -1,108 +1,65 @@
-name: CI
+name: Quality
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [master]
   pull_request:
-    branches: [ main, develop ] # we want the workflow to trigger on commits to PRs only
+    branches: [master]
 
-jobs: # each workflow consists of 1+ jobs; by default, all jobs run in parallel
-  lint: # job name
-    runs-on: ubuntu-latest # host's operating system
-    steps: # each job consists of 1+ steps
-      - name: Checkout commit # download the code from triggering commit
+jobs:
+  prettier:
+    name: 'Prettier'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Use Node.js
-        uses: actions/setup-node@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: '12.x'
+          node-version: '16'
+          cache: 'npm'
 
-      - name: Cache NPM # leverage npm cache on repeated workflow runs if package.json didn't change
-        uses: actions/cache@v1
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Prettier check
+        run: npm run prettier
+
+  eslint:
+    name: 'ESLint'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: '16'
+          cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm ci
+      - name: Install dependencies
+        run: npm install
 
-      - name: Run linter
+      - name: Run ESLint check
         run: npm run lint
 
-  security: # in this and following jobs, only the last step will be different
+  types:
+    name: 'TypeScript'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout commit
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Use Node.js
-        uses: actions/setup-node@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: '12.x'
+          node-version: '16'
+          cache: 'npm'
 
-      - name: Cache NPM
-        uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: npm install
 
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Run security check
-        run: npm run audit-security
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout commit
-        uses: actions/checkout@v2
-
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '12.x'
-
-      - name: Cache NPM
-        uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm run test
-
-  copy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout commit
-        uses: actions/checkout@v2
-
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '12.x'
-
-      - name: Cache NPM
-        uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Run copy checks
-        run: npm run check-copy
+      - name: Run TypeScript type check
+        run: npm run type-check

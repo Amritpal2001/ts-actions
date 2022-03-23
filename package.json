@@ -4,16 +4,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint:eslint": "eslint \"**/*.{ts,tsx}\" --max-warnings=0",
-      "lint:tsc": "tsc --noemit",
-      "lint:markdown": "markdownlint *.md",
-      "lint": "run-p lint:*",
-      "audit-security": "audit-ci --config ./audit-ci.json",
-      "test": "jest --verbose",
-      "check-copy:cspell": "cspell --config=.cspell.json **/*.md",
-      "check-copy:language": "write-good *.md --no-passive",
-      "check-copy": "run-p check-copy:*"
+    "find:unused": "npx next-unused",
+    "prettier": "prettier --write .",
+    "lint": "next lint",
+    "lint:fix": "eslint . --fix",
+    "type-check": "tsc"
   },
+  "pre-commit": [
+    "find:unused",
+    "lint",
+    "type-check",
+    "lint:fix",
+    "prettier"
+  ],
   "dependencies": {
     "date-fns": "^2.11.1",
     "gray-matter": "^4.0.2",
