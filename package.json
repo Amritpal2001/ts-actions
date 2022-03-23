@@ -3,7 +3,16 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint:eslint": "eslint \"**/*.{ts,tsx}\" --max-warnings=0",
+      "lint:tsc": "tsc --noemit",
+      "lint:markdown": "markdownlint *.md",
+      "lint": "run-p lint:*",
+      "audit-security": "audit-ci --config ./audit-ci.json",
+      "test": "jest --verbose",
+      "check-copy:cspell": "cspell --config=.cspell.json **/*.md",
+      "check-copy:language": "write-good *.md --no-passive",
+      "check-copy": "run-p check-copy:*"
   },
   "dependencies": {
     "date-fns": "^2.11.1",
